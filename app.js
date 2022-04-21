@@ -1,20 +1,17 @@
 const express = require('express');
 const mysql = require('mysql');
-
 const bodyParser = require('body-parser');
-
 const PORT = process.env.PORT || 3050;
-
 const app = express();
 
 app.use(bodyParser.json());
 
-// MYSQL
+// MySQL
 
 const connection = mysql.createConnection({
     host: 'localhost',
     user: 'root',
-    password: 'Alf24-LD21@#',
+    password: 'elarabe1616',
     database: 'testing2'
 });
 
@@ -22,6 +19,7 @@ const connection = mysql.createConnection({
 app.get('/', (req, res) => {
     res.send('Welcome to my API');
 });
+
 // all vehicles
 
 // Get all vehicles
@@ -34,7 +32,7 @@ app.get('/vehicles', (req, res) => {
         }else{
             res.send('There is not vehicles in the DB')
         }
-    })
+    });
     // res.send('List of vehicles');
 });
 
@@ -49,7 +47,7 @@ app.get('/vehicles/:id', (req, res) => {
         }else{
             res.send(`There is not vehicles in the DB  with id: ${id}`)
         }
-    })
+    });
 });
 // Create new vehicle
 app.post('/addVehicle', (req, res) => {
@@ -64,10 +62,10 @@ app.post('/addVehicle', (req, res) => {
     connection.query(sql, vehiclesObj, err => {
         if (err) throw err;
         res.send(`Vehicle with plate ${vehiclesObj.plate} created successful`)
-    })
+    });
 });
 
-// update a vehicle
+// Update a vehicle
 app.put('/updateVehicles/:id', (req, res) => {
     const { id } = req.params
     const {name, plate, cod, color} = req.body;
@@ -76,20 +74,20 @@ app.put('/updateVehicles/:id', (req, res) => {
     connection.query(sql, err => {
         if (err) throw err;
         res.send(`Vehicle with plate ${plate} updated successful`)
-    })
+    });
 });
 
-//delete a vehicle
+// Delete a vehicle
 app.delete('/deleteVehicle/:id', (req, res) => {
     const { id } = req.params;
     const sql = `DELETE FROM Vehicles WHERE cod= ${id}`;
     connection.query(sql, err => {
         if (err) throw err;
         res.send(`Vehicle with cod ${id} deleted successful`)
-    })
+    });
 });
-// Check connect
 
+// Check connect
 connection.connect(error =>{
     if (error) throw error;
     console.log('Database server connected and running well!')
@@ -98,4 +96,3 @@ connection.connect(error =>{
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`)
 });
-
