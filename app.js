@@ -1,16 +1,14 @@
+// Express and MYSQL integrations
 const express = require('express');
 const mysql = require('mysql');
 
 const bodyParser = require('body-parser');
-
+// RUN on PORT 3050
 const PORT = process.env.PORT || 3050;
-
 const app = express();
-
 app.use(bodyParser.json());
 
 // MYSQL
-
 const connection = mysql.createConnection({
     host: 'localhost',
     user: 'root',
@@ -20,24 +18,38 @@ const connection = mysql.createConnection({
 
 // ROUTES
 app.get('/', (req, res) => {
-    res.send('Welcome to my API');
-});
-// all vehicles
+    const response ={
+        status: 200,
+        res:'Welcome to my API',
+        error: false,
 
+    }
+    res.json(response);
+});
 // Get all vehicles
 app.get('/vehicles', (req, res) => {
     const sql = 'SELECT * FROM Vehicles';
     connection.query(sql, (err, results) => {
         if (err) throw error;
         if (results.length > 0){
-            res.json(results);
+            const response ={
+                status: 200,
+                res: results,
+                error: false,
+        
+            }
+            res.json(response);
         }else{
-            res.send('There is not vehicles in the DB')
+            const response ={
+                status: 502,
+                res: 'There is not vehicles in the DB',
+                error: true,
+        
+            }
+            res.json(response);
         }
-    })
-    // res.send('List of vehicles');
+    });
 });
-
 // Get all vehicles
 app.get('/vehicles/:id', (req, res) => {
     const { id } = req.params;
@@ -45,11 +57,23 @@ app.get('/vehicles/:id', (req, res) => {
     connection.query(sql, (err, results) => {
         if (err) throw error;
         if (results.length > 0){
-            res.json(results);
+            const response ={
+                status: 200,
+                res: results,
+                error: false,
+        
+            }
+            res.json(response);
         }else{
-            res.send(`There is not vehicles in the DB  with id: ${id}`)
+            const response ={
+                status: 502,
+                res:`There is not vehicles in the DB  with id: ${id}`,
+                error: true,
+        
+            }
+            res.json(response);
         }
-    })
+    });
 });
 // Create new vehicle
 app.post('/addVehicle', (req, res) => {
@@ -63,10 +87,15 @@ app.post('/addVehicle', (req, res) => {
 
     connection.query(sql, vehiclesObj, err => {
         if (err) throw err;
-        res.send(`Vehicle with plate ${vehiclesObj.plate} created successful`)
-    })
+        const response ={
+            status: 200,
+            res: `Vehicle with plate ${vehiclesObj.plate} created successful`,
+            error: false,
+    
+        }
+        res.json(response)
+    });
 });
-
 // update a vehicle
 app.put('/updateVehicles/:id', (req, res) => {
     const { id } = req.params
@@ -75,27 +104,37 @@ app.put('/updateVehicles/:id', (req, res) => {
     WHERE cod = ${id}`;
     connection.query(sql, err => {
         if (err) throw err;
-        res.send(`Vehicle with plate ${plate} updated successful`)
-    })
+        const response ={
+            status: 200,
+            res: `Vehicle with plate ${plate} updated successful`,
+            error: false,
+    
+        }
+        res.json(response)
+    });
 });
-
 //delete a vehicle
 app.delete('/deleteVehicle/:id', (req, res) => {
     const { id } = req.params;
     const sql = `DELETE FROM Vehicles WHERE cod= ${id}`;
     connection.query(sql, err => {
         if (err) throw err;
-        res.send(`Vehicle with cod ${id} deleted successful`)
-    })
+        const response ={
+            status: 200,
+            res: `Vehicle with cod ${id} deleted successful`,
+            error: false,
+    
+        }
+        res.json(response)
+    });
 });
 // Check connect
-
 connection.connect(error =>{
     if (error) throw error;
-    console.log('Database server connected and running well!')
+    console.log('Database server connected and running well!');
 });
 
 app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`)
+    console.log(`Server running on port ${PORT}`);
 });
 
