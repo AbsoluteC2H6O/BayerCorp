@@ -84,7 +84,7 @@ app.post('/addVehicle', (req, res) => {
                 res.send(`Vehicle with plate ${vehiclesObj.plate} created successful!`);
         });
         }else{
-            
+            res.send(`Vehicle with plate ${plate} is already created in the data`);
         }
     });
 });
@@ -92,12 +92,21 @@ app.post('/addVehicle', (req, res) => {
 // Update a vehicle
 app.put('/updateVehicles/:id', (req, res) => {
     const {id} = req.params;
-    const {name, plate, cod, color} = req.body;
-    const sql = `UPDATE Vehicles SET name = '${name}', plate = '${plate}', color = '${color}'
-    WHERE cod = ${id}`;
-    connection.query(sql, err => {
-        if (err) throw err;
-        res.send(`Vehicle with plate ${plate} updated successful!`);
+    const sql = `SELECT *FROM Vehicles WHERE cod = ${id}`;
+
+    connection.query(sql, (err, results) => {
+        if (err) throw error;
+        if (results.length > 0){
+            const {name, plate, color} = req.body;
+            const sql = `UPDATE Vehicles SET name = '${name}', plate = '${plate}', color = '${color}'
+            WHERE cod = ${id}`;
+            connection.query(sql, err => {
+                if (err) throw err;
+                res.send(`Vehicle with ID ${id} updated successful!`);
+            });
+        }else{
+            res.send(`Vehicle with ID ${id} is not in the data.`);
+        }
     });
 });
 
