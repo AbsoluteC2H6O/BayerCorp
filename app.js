@@ -130,19 +130,19 @@ app.post('/addVehicle', (req, res) => {
     });
 });
 
-// Update a vehicle
-app.put('/updateVehicles/:id', (req, res) => {
-    const { id } = req.params
-    const sql = `SELECT *FROM Vehicles WHERE cod = ${id}`;
+// Update a vehicle by plate
+app.put('/updateVehicles/:plate', (req, res) => {
+    const { plate } = req.params;
+    const sql = `SELECT *FROM Vehicles WHERE plate = '${plate}'`;
     connection.query(sql, (err, results) => {
         if (err) throw error;
         if (results.length === 1){
-            const sql = 'UPDATE Vehicles SET ? WHERE cod = ?';
-            connection.query(sql, [req.body, id], (err) => {
+            const sql = 'UPDATE Vehicles SET ? WHERE plate = ?';
+            connection.query(sql, [req.body, plate], (err) => {
             if (err) throw err;
             const response ={
                 status: 200,
-                res: `Vehicle with cod ${id} updated successful!`,
+                res: `Vehicle with plate = ${plate} updated successful!`,
                 error: false,
             }
             res.json(response)
@@ -150,7 +150,7 @@ app.put('/updateVehicles/:id', (req, res) => {
         }else{
             const response ={
                 status: 502,
-                res: `Vehicle with cod ${id} not updated, is already created in the database.`,
+                res: `Vehicle with plate = ${plate} not updated, is already created in the database.`,
                 error: true,
             }
             res.json(response);
