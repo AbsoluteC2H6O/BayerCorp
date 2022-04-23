@@ -12,7 +12,7 @@ app.use(bodyParser.json());
 const connection = mysql.createConnection({
     host: 'localhost',
     user: 'root',
-    password: 'elarabe1616',
+    password: 'Alf24-LD21@#',
     database: 'testing2'
 });
 
@@ -67,12 +67,14 @@ app.get('/vehiclePlate/:plate', (req, res) => {
 
 // Create new vehicle
 app.post('/addVehicle', (req, res) => {
-    const {plate} = req.body.plate;
-    //SELECT *FROM Vehicles WHERE EXISTS plate = '${plate}' 
-    const sql = `SELECT COUNT(*) FROM Vehicles WHERE plate = '${plate}'`;
+    const { plate } = req.body;
+    console.log('plate', plate)
+    const sql = `SELECT *FROM Vehicles WHERE plate='${plate}'`;
     connection.query(sql, (err, results) => {
-        if (err) throw error;
-        if (results.length == 0){
+        if (err) throw err;
+        if (results.length > 0){
+            res.send(`Vehicle with plate ${req.body.plate} is already created in the data`);
+        }else{
             const sql = 'INSERT INTO Vehicles SET ?';
             const vehiclesObj = {
                 name: req.body.name,
@@ -82,10 +84,8 @@ app.post('/addVehicle', (req, res) => {
             };
             connection.query(sql, vehiclesObj, err => {
                 if (err) throw err;
-                res.send(`Vehicle with plate ${vehiclesObj.plate} created successful! ${count}`);
+                res.send(`Vehicle with plate ${vehiclesObj.plate} created successful!`);
         });
-        }else{
-            res.send(`Vehicle with plate ${req.body.plate} is already created in the data`);
         }
     });
 });
