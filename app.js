@@ -1,7 +1,7 @@
 const express = require('express');
 const mysql = require('mysql');
 const bodyParser = require('body-parser');
-const {NULL} = require('mysql/lib/protocol/constants/types');
+const { NULL } = require('mysql/lib/protocol/constants/types');
 const PORT = process.env.PORT || 3050;
 const app = express();
 
@@ -11,7 +11,7 @@ app.use(bodyParser.json());
 const connection = mysql.createConnection({
     host: 'localhost',
     user: 'root',
-    password: 'Alf24-LD21@#',
+    password: 'elarabe1616',
     database: 'testing2'
 });
 
@@ -21,10 +21,10 @@ app.get('/', (req, res) => {
         status: 200,
         res:'¡Welcome to my API - BayerCorp!',
         error: false,
-
     }
     res.json(response);
 });
+
 // Get all vehicles
 app.get('/vehicles', (req, res) => {
     const sql = 'SELECT * FROM Vehicles';
@@ -35,47 +35,46 @@ app.get('/vehicles', (req, res) => {
                 status: 200,
                 res: results,
                 error: false,
-        
             }
             res.json(response);
         }else{
             const response ={
                 status: 502,
-                res: 'Sorry, there is not vehicles in the DB.',
+                res: 'Sorry, there is not vehicles in the database.',
                 error: true,
-        
             }
             res.json(response);
         }
     });
 });
-// // Get vehicle for id
-// app.get('/vehicles/:id', (req, res) => {
-//     const { id } = req.params;
-//     const sql = `SELECT *FROM Vehicles WHERE cod = ${id}`;
-//     connection.query(sql, (err, results) => {
-//         if (err) throw err;
-//         if (results.length > 0){
-//             const response ={
-//                 status: 200,
-//                 res: results,
-//                 error: false,
-//             }
-//             res.json(response);
-//         }else{
-//             const response ={
-//                 status: 502,
-//                 res:`There is not vehicles in the DB  with id: ${id}`,
-//                 error: true,
-        
-//             }
-//             res.json(response);
-//         }
-//     });
-// });
+
+//  Get vehicle for id
+app.get('/vehicles/:id', (req, res) => {
+    const { id } = req.params;
+    const sql = `SELECT *FROM Vehicles WHERE cod = ${id}`;
+    connection.query(sql, (err, results) => {
+        if (err) throw err;
+        if (results.length > 0){
+            const response ={
+                status: 200,
+                res: results,
+                error: false,
+            }
+            res.json(response);
+        }else{
+            const response ={
+                status: 502,
+                res:`There is not vehicles in the database with id: ${id}`,
+                error: true,
+            }
+            res.json(response);
+        }
+    });
+});
+
 // Get vehicle for plate
 app.get('/vehicles/:plate', (req, res) => {
-    const {plate} = req.params;
+    const { plate } = req.params;
     const sql = `SELECT *FROM Vehicles WHERE plate = '${plate}'`;
     connection.query(sql, (err, results) => {
         if (err) throw err;
@@ -89,24 +88,24 @@ app.get('/vehicles/:plate', (req, res) => {
         }else{
             const response ={
                 status: 502,
-                res: `Vehicle with plate ${plate} is not in the database`,
+                res: `Vehicle with plate ${plate} is not in the database.`,
                 error: true,
             }
             res.json(response)
         }
     });
 });
+
 // Create new vehicle
 app.post('/addVehicle', (req, res) => {
     const { plate } = req.body;
-    console.log('plate', plate)
-    const sql = `SELECT *FROM Vehicles WHERE plate='${plate}'`;
+    const sql = `SELECT *FROM Vehicles WHERE plate = '${plate}'`;
     connection.query(sql, (err, results) => {
         if (err) throw err;
         if (results.length > 0){
             const response ={
                 status: 502,
-                res: `Vehicle with plate ${req.body.plate} is already created in the data`,
+                res: `Vehicle with plate ${req.body.plate} is already created in the database.`,
                 error: true,
             }
             res.json(response);
@@ -122,16 +121,16 @@ app.post('/addVehicle', (req, res) => {
                 if (err) throw err;
                 const response ={
                     status: 200,
-                    res: `Vehicle with plate ${vehiclesObj.plate} created successful`,
+                    res: `Vehicle with plate ${vehiclesObj.plate} created successful!`,
                     error: false,
                 }
                 res.json(response)
-        });
+            });
         }
     });
 });
 
-// update a vehicle
+// Update a vehicle
 app.put('/updateVehicles/:id', (req, res) => {
     const { id } = req.params
     const sql = `SELECT *FROM Vehicles WHERE cod = ${id}`;
@@ -143,7 +142,7 @@ app.put('/updateVehicles/:id', (req, res) => {
             if (err) throw err;
             const response ={
                 status: 200,
-                res: `Vehicle with cod ${id} updated successful`,
+                res: `Vehicle with cod ${id} updated successful!`,
                 error: false,
             }
             res.json(response)
@@ -151,56 +150,60 @@ app.put('/updateVehicles/:id', (req, res) => {
         }else{
             const response ={
                 status: 502,
-                res: `Vehicle with cod ${id} not updated!`,
+                res: `Vehicle with cod ${id} not updated, is already created in the database.`,
                 error: true,
             }
             res.json(response);
         }
-});
+    });
 });
 
-//delete a vehicle by cod
-// app.delete('/deleteVehicle/:id', (req, res) => {
-//     const {id} = req.params;
-//     const sql = `SELECT *FROM Vehicles WHERE cod = ${id}`;
-//     connection.query(sql, (err, results) => {
-//         if (err) throw error;
-//         if (results.length > 0){
-//             const sql = `DELETE FROM Vehicles WHERE cod = ${id}`;
-//             connection.query(sql, err => {
-//                 if (err) throw error;
-//                 const response ={
-//                     status: 200,
-//                     res: `Vehicle with cod ${id} deleted successful`,
-//                     error: false,
-            
-//                 }
-//                 res.json(response)
-//             });
-//         }else{
-//             const response ={
-//                 status: 502,
-//                 res: `Vehicle with plate ${plate} is not in the data.`,
-//                 error: true,
-//             }
-//             res.json(response);
-//         }
-//     });
-// });
+// Delete a vehicle by cod
+/* app.delete('/deleteVehicle/:id', (req, res) => {
+    const { id } = req.params;
+    const sql = `SELECT *FROM Vehicles WHERE cod = ${id}`;
+    console.log('id', id);
+    connection.query(sql, (err, results) => {
+        if (err) throw err;
+        console.log('results', results.length);
+        if (results.length > 0){
+            const sql = `DELETE FROM Vehicles WHERE cod = ${id}`;
+            connection.query(sql, err => {
+                if (err) throw err;
+                const response ={
+                    status: 200,
+                    res: `Vehicle with ID = ${id} deleted successful`,
+                    error: false,
+                }
+                res.json(response)
+            });
+        }else{
+            const response ={
+                status: 502,
+                res: `Vehicle with ID = ${id} is not in the database.`,
+                error: true,
+            }
+            res.json(response);
+        }
+    });
+}); */
 
 // Delete a vehicle by plate
 app.delete('/deleteVehicle/:plate', (req, res) => {
-    const {plate} = req.params;
+    const { plate } = req.params;
+    console.log('req', req.params);
     const sql = `SELECT *FROM Vehicles WHERE plate = '${plate}'`;
+    console.log('plate', plate);
     connection.query(sql, (err, results) => {
-        if (err) throw error;
+        if (err) throw err;
+        console.log('results', results.length);
         if (results.length > 0){
             const sql = `DELETE FROM Vehicles WHERE plate = '${plate}'`;
             connection.query(sql, err => {
-                if (err) throw error;
+                if (err) throw err;
                 const response ={
                     status: 200,
-                    res: `Vehicle with cod ${plate} deleted successful`,
+                    res: `Vehicle with plate = ${plate} deleted successful!`,
                     error: false,
             
                 }
@@ -209,13 +212,14 @@ app.delete('/deleteVehicle/:plate', (req, res) => {
         }else{
             const response ={
                 status: 502,
-                res: `Vehicle with plate ${plate} is not in the data.`,
+                res: `Vehicle with plate = ${plate} is not in the database.`,
                 error: true,
             }
             res.json(response);
         }
     });
 });
+
 // Check connect
 connection.connect(error =>{
     if (error) throw error;
