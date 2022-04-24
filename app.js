@@ -29,7 +29,7 @@ app.get('/', (req, res) => {
 app.get('/vehicles', (req, res) => {
     const sql = 'SELECT * FROM Vehicles';
     connection.query(sql, (err, results) => {
-        if (err) throw error;
+        if (err) throw err;
         if (results.length > 0){
             const response ={
                 status: 200,
