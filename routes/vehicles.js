@@ -5,7 +5,8 @@ const express = require('express');
 // Express-Router
 const router = express.Router();
 
-router.get('/allvehicles', vehicleController.vehicle_index);
+router.get('/', vehicleController.vehicle_index);
+router.get('/allvehicles', vehicleController.vehicle_all_vehicles);
 router.get('/:id', vehicleController.vehicle_details_id);
 router.get('/:plate', vehicleController.vehicle_details_plate);
 router.get('/create', vehicleController.vehicle_create_get);

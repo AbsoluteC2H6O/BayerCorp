@@ -9,14 +9,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/iamshaunjp/node-crash-course.git"
+    "url": "git+https://github.com/AbsoluteC2H6O/BayerCorp"
   },
   "author": "BayerCorp",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/iamshaunjp/node-crash-course/issues"
+    "url": ""
   },
-  "homepage": "https://github.com/iamshaunjp/node-crash-course#readme",
+  "homepage": "",
   "dependencies": {
     "body-parser": "^1.20.0",
     "ejs": "^3.1.7",

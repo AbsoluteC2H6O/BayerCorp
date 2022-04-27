@@ -1,13 +1,31 @@
 const Vehicle = require('../models/vehicle');
 
-// Get all vehicles
+// Menu
 const vehicle_index = (req, res) => {
+  res.render('vehicles', { title: 'Menú' });
+};
+
+// Get all vehicles
+const vehicle_all_vehicles = (req, res) => {
   const sql = 'SELECT * FROM Vehicles';
   Vehicle.query(sql, (err, result) => {
-      if (err) throw error;
+      if (err) throw err;
       if (result.length > 0){
-        res.render('details', { vehicle: result, title: `Vehicle list` });
+        const response ={
+          status: 200,
+          res: result,
+          error: false,
+      }
+      //res.json(response);
+      //res.render('details', { vehicle: result, title: `Vehicle list` });
+      res.render('vehicles', { title: 'Menu' });
       }else{
+        const response ={
+          status: 502,
+          res: 'Sorry, there is not vehicles in the database.',
+          error: true,
+        }
+        //res.json(response);
         console.log(err);
         res.render('404', { title: 'Sorry, there is not vehicles in the database.' });
       }
@@ -21,13 +39,14 @@ const vehicle_details_id = (req, res) => {
   Vehicle.query(sql, (err, result) => {
       if (err) throw err;
       if (result.length > 0){
-        res.render('details', { vehicle: result, title: `Vehicle Details for ID = ${id}` });
+        //res.render('index', { vehicle: result, title: `Vehicle Details for ID = ${id}` });
+        res.render('index', { title: 'Encontrado' });
       }else{
-          console.log(err);
-          res.render('404', { title: `There is not vehicles in the database with id: ${id}` });
+        console.log(err);
+        res.render('404', { title: `There is not vehicles in the database with id: ${id}` });
       }
   });
-}
+};
 
 // Get vehicle for plate
 const vehicle_details_plate = (req, res) => {
@@ -46,8 +65,9 @@ const vehicle_details_plate = (req, res) => {
 
 // Create new vehicle form
 const vehicle_create_get = (req, res) => {
-  res.render('create', { title: 'Create a new vehicle registration' });
-}
+  res.render('create', { title: 'Create a new vehicle registration.' });
+  //res.redirect('/index');
+};
 
 // Create a new vehicle registration
 const vehicle_create_post = (req, res) => {
@@ -79,23 +99,13 @@ const vehicle_create_post = (req, res) => {
     }
   });
 };
-/* const vehicle_create_post = (req, res) => {
-  const vehicle = new Vehicle(req.body);
-  vehicle.save()
-    .then(result => {
-      res.redirect('/vehicle');
-    })
-    .catch(err => {
-      console.log(err);
-    });
-} */
 
 // Update vehicle registration by ID
 const vehicle_update_id = (req, res) => {
   const { id } = req.params;
   const sql = `SELECT *FROM Vehicles WHERE cod = ${id}`;
   connection.query(sql, (err, results) => {
-    if (err) throw error;
+    if (err) throw err;
     if (results.length === 1){
       const sql = 'UPDATE Vehicles SET ? WHERE cod = ?';
       connection.query(sql, [req.body, id], (err) => {
@@ -168,10 +178,11 @@ const vehicle_delete_plate = (req, res) => {
 };
 
 module.exports = {
-  vehicle_index, 
+  vehicle_index,
+  vehicle_all_vehicles,
   vehicle_details_id,
-  vehicle_details_plate, 
-  vehicle_create_get, 
+  vehicle_details_plate,
+  vehicle_create_get,
   vehicle_create_post,
   vehicle_update_id,
   vehicle_delete_id,

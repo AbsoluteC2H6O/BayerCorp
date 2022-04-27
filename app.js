@@ -19,10 +19,10 @@ app.use(express.static('public'));
 app.use(express.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(morgan('dev'));
-app.use((req, res, next) => {
+/* app.use((req, res, next) => {
   res.locals.path = req.path;
   next();
-});
+}); */
 
 // Routes
 app.get('/', (req, res) => {
@@ -41,14 +41,12 @@ app.get('/report', (req, res) => {
   res.render('report', { title: 'Reporte' });
 });
 
-app.get('/vehicles', (req, res) => {
+/* app.get('/vehicles', (req, res) => {
   res.render('vehicles', { title: 'Menú' });
-});
+}); */
 
 // Vehicle routes
-// COMENTE ESTA LÍNEA YA QUE HAY QUE REALIZAR LAS MEJORAS PARA DARLE FUNCIONALIDAD
-// A LOS BOTONES DEL MENU Y LOS ENLACES PERTINENTES
-//app.use('/vehicles', vehicles);
+app.use('/vehicles', vehicles);
 
 // 404 page
 app.use((req, res) => {
