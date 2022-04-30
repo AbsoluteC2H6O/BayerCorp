@@ -3,7 +3,7 @@ const Vehicle = mysql.createConnection({
   host      : 'localhost',
   user      : 'root',
   password  : 'elarabe1616',
-  database  : 'testing2'
+  database  : 'BayerCorp'
 });
 
 // Check connect
