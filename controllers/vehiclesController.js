@@ -107,18 +107,48 @@ const vehicle_create_get = (req, res) => {
 
 // Create a new registration
 const vehicle_create_post = (req, res) => {
-  const { plate } = req.body;
-  const sql = `SELECT *FROM Auto WHERE Placa = '${plate}'`;
-
-  Vehicle.query(sql, (err, result) => {
+  const { Placa } = req.body;
+  const sql = `SELECT COUNT(*) AS namesCount FROM Auto WHERE Placa = '${Placa}'`;
+  Vehicle.query(sql, (err, rows) => {
     if (err) throw err;
-    if (result.length > 0){
-      const response ={
+    if (rows[0].namesCount > 0){
+      const sql1 = `SELECT *FROM Auto WHERE Placa = '${Placa}'`;
+      Vehicle.query(sql1, (err, result1) => {
+        if (err) throw err;
+        if (result1.length > 0){
+          const sql2 = `SELECT * FROM Auto_Vivienda WHERE Auto_idAuto = ${result1[0].idAuto}`;
+          Vehicle.query(sql2, (err, result2) => {
+            if (err) throw err;
+            if(result2.length > 0){
+              const sql = 'INSERT INTO Ingreso SET ?';
+              const vehiclesObj = {
+                IdIngreso: req.body.IdIngreso,
+                Fecha_y_hora: req.body.Fecha_y_hora,
+                Comentario: req.body.Comentario,
+                idVivienda: result2[0].Vivienda_idVivienda,
+                idAuto: result1[0].idAuto,
+                Placa: req.body.Placa,
+                Color: result1[0].Color
+              };
+              Vehicle.query(sql, vehiclesObj, err => {
+                if (err) throw err;
+                const response ={
+                    status: 200,
+                    res: `Vehicle with plate = ${vehiclesObj.Placa} created successful!`,
+                    error: false,
+                }
+                res.json(response);
+              });
+            }
+          });
+        }
+      });
+      /* const response ={
         status: 200,
-        res: `Vehicle with plate = ${vehiclesObj.Placa} is owner!`,
+        res: `Vehicle with plate = ${Placa} is owner!`,
         error: false,
       }
-      /* FALTA OBTENER LOS CAMPOS Y LLENARLOS EN EL OBJETO DE LA TABLA INGRESO*/
+      res.json(response); */
       //res.render('404', { title: `Vehicle with plate ${plate} is already created in the database.` });
     }else{
       const sql = 'INSERT INTO Ingreso SET ?';
@@ -139,7 +169,7 @@ const vehicle_create_post = (req, res) => {
             error: false,
         }
         res.json(response);
-        res.json({ redirect: '/index' });
+        //res.json({ redirect: '/index' });
       });
     }
   });
