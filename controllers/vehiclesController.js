@@ -39,9 +39,12 @@ const vehicle_details_id = (req, res) => {
   Vehicle.query(sql, (err, result) => {
       if (err) throw err;
       if (result.length > 0){
-        //res.render('index', { vehicle: result, title: `Vehicle Details for ID = ${id}` });
-        res.json(result);
-        res.render('index', { title: 'Encontrado' });
+        const response ={
+          status: 200,
+          res: result,
+          error: false
+        }
+        res.json(response);
       }else{
         console.log(err);
         res.render('404', { title: `There are not vehicles in the database with that ID = ${id}` });
@@ -49,6 +52,7 @@ const vehicle_details_id = (req, res) => {
   });
 };
 
+// SERVICIO 4 = Reporte de control filtrado por vehiculo
 // Get ingreso for plate
 const vehicle_details_plate = (req, res) => {
   const { plate } = req.params;
@@ -56,9 +60,12 @@ const vehicle_details_plate = (req, res) => {
   Vehicle.query(sql, (err, result) => {
     if (err) throw err;
     if (result.length > 0){
-      //res.render('details', { vehicle: result, title: `Vehicle Details for plate = ${plate}` });
-      res.json(result);
-      res.render('index', { title: 'Encontrado' });
+      const response ={
+        status: 200,
+        res: result,
+        error: false
+      }
+      res.json(response);
     }else{
       console.log(err);
       res.render('404', { title: `Vehicle with that plate = ${plate} is not in the database.` });
@@ -66,6 +73,7 @@ const vehicle_details_plate = (req, res) => {
   });
 };
 
+// SERVICIO 5 = Reporte de control filtrado por vivienda
 // Get ingreso for house
 const vehicle_details_house = (req, res) => {
   const { idVivienda } = req.params;
@@ -73,9 +81,12 @@ const vehicle_details_house = (req, res) => {
   Vehicle.query(sql, (err, result) => {
     if (err) throw err;
     if (result.length > 0){
-      res.json(result);
-      res.render('index', { title: 'Encontrado' });
-      //res.render('details', { vehicle: result, title: `Vehicle Details for idVivienda = ${idVivienda}` });
+      const response ={
+        status: 200,
+        res: result,
+        error: false
+      }
+      res.json(response);
     }else{
       console.log(err);
       res.render('404', { title: `Vehicle with that idVivienda = ${idVivienda} is not in the database.` });
@@ -83,18 +94,112 @@ const vehicle_details_house = (req, res) => {
   });
 };
 
+// SERVICIO 6 = Reporte de control filtrado por tipo de vehiculo (propietario o visitante)
 // Get ingreso for idAuto
 const vehicle_details_auto = (req, res) => {
-  const sql = `SELECT *FROM Ingreso WHERE idAuto IS NOT NULL`;
+  const { n } = req.params;
+  if(n == 0)
+  {
+    const sql = `SELECT *FROM Ingreso WHERE idAuto IS NOT NULL`;
+    Vehicle.query(sql, (err, result) => {
+      if (err) throw err;
+      if (result.length > 0){
+        const response ={
+          status: 200,
+          message: 'Vehicles owners',
+          res: result,
+          error: false
+        }
+        res.json(response);
+      }else{
+        const response ={
+          status: 400,
+          message: 'Vehicles owners not database',
+          res: result,
+          error: false
+        }
+        res.json(response);
+      }
+    });
+  }else if(n == 1){
+    const sql1 = `SELECT *FROM Ingreso WHERE idAuto IS NULL`;
+    Vehicle.query(sql1, (err, result) => {
+      if (err) throw err;
+      if (result.length > 0){
+        const response ={
+          status: 200,
+          message: 'Vehicles visitans',
+          res: result,
+          error: false
+        }
+        res.json(response);
+      }else{
+        const response ={
+          status: 400,
+          message: 'Vehicles visitans not database',
+          res: result,
+          error: false
+        }
+        res.json(response);
+      }
+    });
+  }else{
+    res.render('404', { title: `Option incorrect.` });
+  }
+};
+
+// SERVICIO 2 = Reporte de control de acceso en rango de fecha
+// Search Ingreso for range date
+const vehicle_range_date = (req, res) => {
+  const { Fecha1, Fecha2 } = req.body;
+  console.log(Fecha1, Fecha2);
+  const sql = `SELECT *FROM Ingreso WHERE Fecha_y_hora >= '${Fecha1}' AND Fecha_y_hora <= '${Fecha2}'`;
   Vehicle.query(sql, (err, result) => {
     if (err) throw err;
     if (result.length > 0){
-      res.json(result);
-      res.render('index', { title: 'Encontrado autos propietarios' });
-      //res.render('details', { vehicle: result, title: `Vehicle Details for idAuto is not NULL` });
+      const response ={
+        status: 200,
+        message: `Vehicle found in date range ${Fecha1} and ${Fecha2}.`,
+        result: result,
+        error: false,
+      }
+      res.json(response);
+      //res.render('index', { title: 'Encontrado autos propietarios' });
     }else{
-      res.json(result);
-      res.render('index', { title: 'Encontrado autos visitantes' });
+      console.log(err);
+      res.render('404', { title: `Vehicle with that range ${Fecha1} and ${Fecha2} is not in the database.` });
+    }
+  });
+};
+
+// SERVICIO 3 = Reporte de control últimos ingresos
+// Search Ingreso for ultimate registration
+const vehicle_latest_registration = (req, res) => {
+  const { n } = req.params;
+  const sql = `SELECT *FROM Ingreso`;
+  Vehicle.query(sql, (err, result) => {
+    if (err) throw err;
+    if (result.length > 0){
+      if(n > result.length){
+        const response ={
+          status: 200,
+          message: `There is not ${n} registers orders in the database.`,
+          error: false,
+        }
+        res.json(response);
+      }else{
+        let lastVehicles = result.slice(result.length-n);
+        const response ={
+          status: 200,
+          message: `Vehicle found in the last range n = ${n}`,
+          result: lastVehicles,
+          error: false,
+        }
+        res.json(response);
+      }
+    }else{
+      console.log(err);
+      res.render('404', { title: `There is not registers in the database` });
     }
   });
 };
@@ -105,7 +210,8 @@ const vehicle_create_get = (req, res) => {
   //res.redirect('/index');
 };
 
-// Create a new registration
+// SERVICIO 1 = Registrar un ingreso vehicular
+// Create a new Ingreso
 const vehicle_create_post = (req, res) => {
   const { Placa } = req.body;
   const sql = `SELECT COUNT(*) AS namesCount FROM Auto WHERE Placa = '${Placa}'`;
@@ -143,13 +249,6 @@ const vehicle_create_post = (req, res) => {
           });
         }
       });
-      /* const response ={
-        status: 200,
-        res: `Vehicle with plate = ${Placa} is owner!`,
-        error: false,
-      }
-      res.json(response); */
-      //res.render('404', { title: `Vehicle with plate ${plate} is already created in the database.` });
     }else{
       const sql = 'INSERT INTO Ingreso SET ?';
       const vehiclesObj = {
@@ -169,7 +268,6 @@ const vehicle_create_post = (req, res) => {
             error: false,
         }
         res.json(response);
-        //res.json({ redirect: '/index' });
       });
     }
   });
@@ -185,14 +283,13 @@ const vehicle_update_id = (req, res) => {
     if (results.length === 1){
       const sql = `UPDATE Ingreso SET Comentario = '${Comentario}' WHERE idIngreso = ${idIngreso}`;
       Vehicle.query(sql, (err, result) => {
-      //Vehicle.query(sql, [req.body, id], (err) => {
       if (err) throw err;
       if(sql)
       {
         const response ={
-            status: 200,
-            res: `Registration with ID = ${idIngreso} updated successful!`,
-            error: false,
+          status: 200,
+          res: `Registration with ID = ${idIngreso} updated successful!`,
+          error: false,
         }
         res.json(response);
       }else{
@@ -242,6 +339,8 @@ module.exports = {
   vehicle_details_plate,
   vehicle_details_house,
   vehicle_details_auto,
+  vehicle_range_date,
+  vehicle_latest_registration,
   vehicle_create_get,
   vehicle_create_post,
   vehicle_update_id,
