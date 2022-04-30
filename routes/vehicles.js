@@ -21,7 +21,6 @@ router.delete('/delete/:plate', vehicleController.vehicle_delete_id);
     3.- Reporte de los ultimos n accesos
     4.- Reporte de control filtrado por vehiculo (medio listo)
     5.- Reporte de control filtrado por vivienda (medio listo)
-    6.- Reporte de control si es vecino o visitante (idAuto o no)
-    7.- Reporte de control por ultima semana, ultimo mes o año presente */
+    6.- Reporte de control si es vecino o visitante (idAuto o no) */
 
 module.exports = router;
