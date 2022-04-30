@@ -1,3 +1,4 @@
+require('dotenv').config({path: './.env'})
 // Express
 const express = require('express');
 // Middleware
