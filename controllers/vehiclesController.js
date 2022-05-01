@@ -86,7 +86,6 @@ const vehicle_details_house = (req, res) => {
       }
       res.json(response);
     }else{
-      console.log(err);
       res.render('404', { title: `Vehicle with that idVivienda = ${idVivienda} is not in the database.` });
     }
   });
@@ -142,7 +141,7 @@ const vehicle_details_auto = (req, res) => {
       }
     });
   }else{
-    res.render('404', { title: `Option incorrect.` });
+    res.render('405', { title: `Option incorrect.` });
   }
 };
 
@@ -150,24 +149,28 @@ const vehicle_details_auto = (req, res) => {
 // Search Ingreso for range date
 const vehicle_range_date = (req, res) => {
   const { Fecha1, Fecha2 } = req.body;
-  console.log(Fecha1, Fecha2);
-  const sql = `SELECT *FROM Ingreso WHERE Fecha_y_hora >= '${Fecha1}' AND Fecha_y_hora <= '${Fecha2}'`;
-  Vehicle.query(sql, (err, result) => {
-    if (err) throw err;
-    if (result.length > 0){
-      const response ={
-        status: 200,
-        message: `Vehicle found in date range ${Fecha1} and ${Fecha2}.`,
-        result: result,
-        error: false,
+  if(Fecha1 !== null && Fecha1 !== undefined && Fecha1 !== "" && Fecha2 !== null && Fecha2 !== undefined && Fecha2 !== "")
+  {
+    const sql = `SELECT *FROM Ingreso WHERE Fecha_y_hora >= '${Fecha1}' AND Fecha_y_hora <= '${Fecha2}'`;
+    Vehicle.query(sql, (err, result) => {
+      if (err) throw err;
+      if (result.length > 0){
+        const response ={
+          status: 200,
+          message: `Vehicle found in date range ${Fecha1} and ${Fecha2}.`,
+          result: result,
+          error: false,
+        }
+        res.json(response);
+        //res.render('index', { title: 'Encontrado autos propietarios' });
+      }else{
+        console.log(err);
+        res.render('404', { title: `Vehicle with that range ${Fecha1} and ${Fecha2} is not in the database.` });
       }
-      res.json(response);
-      //res.render('index', { title: 'Encontrado autos propietarios' });
-    }else{
-      console.log(err);
-      res.render('404', { title: `Vehicle with that range ${Fecha1} and ${Fecha2} is not in the database.` });
-    }
-  });
+    });
+  }else{
+    res.render('405', { title: `Error 405` });
+  }
 };
 
 // SERVICIO 3 = Reporte de control últimos ingresos
@@ -213,93 +216,101 @@ const vehicle_create_get = (req, res) => {
 const vehicle_create_post = (req, res) => {
   const { Placa } = req.body;
   const sql = `SELECT COUNT(*) AS namesCount FROM Auto WHERE Placa = '${Placa}'`;
-  Vehicle.query(sql, (err, rows) => {
-    if (err) throw err;
-    if (rows[0].namesCount > 0){
-      const sql1 = `SELECT *FROM Auto WHERE Placa = '${Placa}'`;
-      Vehicle.query(sql1, (err, result1) => {
-        if (err) throw err;
-        if (result1.length > 0){
-          const sql2 = `SELECT * FROM Auto_Vivienda WHERE Auto_idAuto = ${result1[0].idAuto}`;
-          Vehicle.query(sql2, (err, result2) => {
-            if (err) throw err;
-            if(result2.length > 0){
-              const sql = 'INSERT INTO Ingreso SET ?';
-              const vehiclesObj = {
-                IdIngreso: req.body.IdIngreso,
-                Fecha_y_hora: req.body.Fecha_y_hora,
-                Comentario: req.body.Comentario,
-                idVivienda: result2[0].Vivienda_idVivienda,
-                idAuto: result1[0].idAuto,
-                Placa: req.body.Placa,
-                Color: result1[0].Color
-              };
-              Vehicle.query(sql, vehiclesObj, err => {
-                if (err) throw err;
-                const response ={
-                    status: 200,
-                    res: `Vehicle with plate = ${vehiclesObj.Placa} created successful!`,
-                    error: false,
-                }
-                res.json(response);
-              });
-            }
-          });
-        }
-      });
-    }else{
-      const sql = 'INSERT INTO Ingreso SET ?';
-      const vehiclesObj = {
-        IdIngreso: req.body.IdIngreso,
-        Fecha_y_hora: req.body.Fecha_y_hora,
-        Comentario: req.body.Comentario,
-        idVivienda: req.body.idVivienda,
-        idAuto: req.body.idAuto,
-        Placa: req.body.Placa,
-        Color: req.body.Color
-      };
-      Vehicle.query(sql, vehiclesObj, err => {
-        if (err) throw err;
-        const response ={
-            status: 200,
-            res: `Vehicle with plate = ${vehiclesObj.Placa} created successful!`,
-            error: false,
-        }
-        res.json(response);
-      });
-    }
-  });
+  if(Placa !== null && Placa !== '' && Placa !== undefined){
+    Vehicle.query(sql, (err, rows) => {
+      if (err) throw err;
+      if (rows[0].namesCount > 0){
+        const sql1 = `SELECT *FROM Auto WHERE Placa = '${Placa}'`;
+        Vehicle.query(sql1, (err, result1) => {
+          if (err) throw err;
+          if (result1.length > 0){
+            const sql2 = `SELECT * FROM Auto_Vivienda WHERE Auto_idAuto = ${result1[0].idAuto}`;
+            Vehicle.query(sql2, (err, result2) => {
+              if (err) throw err;
+              if(result2.length > 0){
+                const sql = 'INSERT INTO Ingreso SET ?';
+                const vehiclesObj = {
+                  IdIngreso: req.body.IdIngreso,
+                  Fecha_y_hora: req.body.Fecha_y_hora,
+                  Comentario: req.body.Comentario,
+                  idVivienda: result2[0].Vivienda_idVivienda,
+                  idAuto: result1[0].idAuto,
+                  Placa: req.body.Placa,
+                  Color: result1[0].Color
+                };
+                Vehicle.query(sql, vehiclesObj, err => {
+                  if (err) throw err;
+                  const response ={
+                      status: 200,
+                      res: `Vehicle with plate = ${vehiclesObj.Placa} created successful!`,
+                      error: false,
+                  }
+                  res.json(response);
+                });
+              }
+            });
+          }
+        });
+      }else{
+        const sql = 'INSERT INTO Ingreso SET ?';
+        const vehiclesObj = {
+          IdIngreso: req.body.IdIngreso,
+          Fecha_y_hora: req.body.Fecha_y_hora,
+          Comentario: req.body.Comentario,
+          idVivienda: req.body.idVivienda,
+          idAuto: req.body.idAuto,
+          Placa: req.body.Placa,
+          Color: req.body.Color
+        };
+        Vehicle.query(sql, vehiclesObj, err => {
+          if (err) throw err;
+          const response ={
+              status: 200,
+              res: `Vehicle with plate = ${vehiclesObj.Placa} created successful!`,
+              error: false,
+          }
+          res.json(response);
+        });
+      }
+    });
+  }else{
+    res.render('405', { title: `Error 405` });
+  }
 };
 
 // SERVICIO 8 = Actualizar el comentario del ingreso de un vehículo en su ID Ingreso
 // Update registration by ID
 const vehicle_update_id = (req, res) => {
   const { idIngreso, Comentario } = req.body;
-  const sql = `SELECT *FROM Ingreso WHERE idIngreso = ${idIngreso}`;
-  Vehicle.query(sql, (err, results) => {
-    if (err) throw err;
-    if (results.length === 1){
-      const sql = `UPDATE Ingreso SET Comentario = '${Comentario}' WHERE idIngreso = ${idIngreso}`;
-      Vehicle.query(sql, (err, result) => {
+  if(idIngreso !== null && idIngreso !== undefined && idIngreso !== "" && Comentario !== null && Comentario !== undefined && Comentario !== ""){
+    const sql = `SELECT *FROM Ingreso WHERE idIngreso = ${idIngreso}`;
+    Vehicle.query(sql, (err, results) => {
       if (err) throw err;
-      if(sql)
-      {
-        const response ={
-          status: 200,
-          res: `Registration with ID = ${idIngreso} updated successful!`,
-          error: false,
+      if (results.length === 1){
+        const sql = `UPDATE Ingreso SET Comentario = '${Comentario}' WHERE idIngreso = ${idIngreso}`;
+        Vehicle.query(sql, (err, result) => {
+        if (err) throw err;
+        if(sql)
+        {
+          const response ={
+            status: 200,
+            res: `Registration with ID = ${idIngreso} updated successful!`,
+            error: false,
+          }
+          res.json(response);
+        }else{
+          console.log(err);
+          res.render('404', { title: `Vehicle is not in the database.` });  
         }
-        res.json(response);
+      });
       }else{
         console.log(err);
-        res.render('404', { title: `Vehicle is not in the database.` });  
+        res.render('404', { title: `Vehicle with ID Acess = ${idIngreso} not updated, is already created in the database.` });
       }
     });
-    }else{
-      console.log(err);
-      res.render('404', { title: `Vehicle with ID Acess = ${idIngreso} not updated, is already created in the database.` });
-    }
-  });
+  }else{
+    res.render('405', { title: `Option incorrect.` });
+  }
 };
 
 // SERVICIO 7 - Eliminar los ingresos de un vehículo por su placa
