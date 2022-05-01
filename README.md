@@ -13,7 +13,7 @@ BayerCorp vehicle register API REST
 
 # Pre instalation:
 
-Run mysql BD script or import one:
+Run mysql BD script or import one using BayerCorp.sql:
 
 open ith workbench and execute AccesoVehicular.sql or execute in mysql terminal
 # Instalation
