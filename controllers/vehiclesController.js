@@ -17,8 +17,6 @@ const vehicle_all_vehicles = (req, res) => {
           error: false,
       }
       res.json(response);
-      //res.render('details', { vehicle: result, title: `Vehicle list` });
-      res.render('vehicles', { title: 'Menu' });
       }else{
         const response ={
           status: 502,

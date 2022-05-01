@@ -3,10 +3,10 @@ const mysql = require('mysql');
 console.log(process.env.HOST);
 
 const Vehicle = mysql.createConnection({
-  host: process.env.HOST || 'localhost',
-  user: process.env.USER || 'root',
-  password: process.env.PASSWORD || 'Alf24-LD21@#',
-  database: process.env.DATABASE || 'BayerCorp'
+  host: process.env.HOST,
+  user: process.env.USER,
+  password: process.env.PASSWORD,
+  database: process.env.DATABASE
 });
 
 // Check connect
