@@ -10,6 +10,12 @@ BayerCorp vehicle register API REST
 -EXPRESS: https://expressjs.com/es/
 
 -NODEMON: https://www.npmjs.com/package/nodemon
+
+# Pre instalation:
+
+Run mysql BD script or import one:
+
+open ith workbench and execute AccesoVehicular.sql or execute in mysql terminal
 # Instalation
 
 # 1 Go to folder name:
